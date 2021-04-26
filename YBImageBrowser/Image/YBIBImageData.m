@@ -16,7 +16,11 @@
 #import "YBIBSentinel.h"
 #import "YBIBCopywriter.h"
 //#import <AssetsLibrary/AssetsLibrary.h>
-#import <SDWebImage.h>
+#if __has_include(<SDWebImage/SDWebImage.h>)
+#import <SDWebImage/SDWebImage.h>
+#else
+#import "SDWebImage.h"
+#endif
 
 
 
