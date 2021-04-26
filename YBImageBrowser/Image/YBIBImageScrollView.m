@@ -9,7 +9,7 @@
 #import "YBIBImageScrollView.h"
 
 @interface YBIBImageScrollView ()
-@property (nonatomic, strong) YYAnimatedImageView *imageView;
+@property (nonatomic, strong) UIImageView *imageView;
 @end
 
 @implementation YBIBImageScrollView
@@ -52,9 +52,9 @@
 
 #pragma mark - getters
 
-- (YYAnimatedImageView *)imageView {
+- (UIImageView *)imageView {
     if (!_imageView) {
-        _imageView = [YYAnimatedImageView new];
+        _imageView = [UIImageView new];
         _imageView.contentMode = UIViewContentModeScaleAspectFill;
         _imageView.layer.masksToBounds = YES;
     }

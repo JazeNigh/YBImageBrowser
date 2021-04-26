@@ -5,7 +5,7 @@ Pod::Spec.new do |s|
 
   s.name         = "YBImageBrowser"
 
-  s.version      = "3.0.9"
+  s.version      = "3.1.0"
 
   s.summary      = "iOS image browser / iOS 图片浏览器"
 
@@ -19,7 +19,7 @@ Pod::Spec.new do |s|
 
   s.author       = { "杨波" => "1106355439@qq.com" }
 
-  s.platform     = :ios, "8.0"
+  s.platform     = :ios, "9.0"
 
   s.source       = { :git => "https://github.com/indulgeIn/YBImageBrowser.git", :tag => "#{s.version}" }
 
@@ -30,14 +30,14 @@ Pod::Spec.new do |s|
   s.subspec "Core" do |core|
     core.source_files   = "YBImageBrowser/**/*.{h,m}"
     core.resources      = "YBImageBrowser/YBImageBrowser.bundle"
-    core.dependency 'YYImage'
+    # core.dependency 'YYImage'
     core.dependency 'SDWebImage', '>= 5.0.0'
   end
   s.subspec "NOSD" do |core|
     core.source_files   = "YBImageBrowser/**/*.{h,m}"
     core.exclude_files  = "YBImageBrowser/WebImageMediator/YBIBDefaultWebImageMediator.{h,m}"
     core.resources      = "YBImageBrowser/YBImageBrowser.bundle"
-    core.dependency 'YYImage'
+    # core.dependency 'YYImage'
   end
 
   s.subspec "Video" do |video|

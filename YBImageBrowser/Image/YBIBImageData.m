@@ -15,9 +15,12 @@
 #import "YBIBImageCache+Internal.h"
 #import "YBIBSentinel.h"
 #import "YBIBCopywriter.h"
-#import <AssetsLibrary/AssetsLibrary.h>
+//#import <AssetsLibrary/AssetsLibrary.h>
+#import <SDWebImage.h>
 
-extern CGImageRef YYCGImageCreateDecodedCopy(CGImageRef imageRef, BOOL decodeForDisplay);
+
+
+//extern CGImageRef YYCGImageCreateDecodedCopy(CGImageRef imageRef, BOOL decodeForDisplay);
 
 static dispatch_queue_t YBIBImageProcessingQueue(void) {
     static dispatch_queue_t queue;
@@ -27,6 +30,10 @@ static dispatch_queue_t YBIBImageProcessingQueue(void) {
     });
     return queue;
 }
+
+@interface YBIBImageData ()
+@property (nonatomic, strong) NSData *imgData;
+@end
 
 @implementation YBIBImageData {
     __weak id _downloadToken;
@@ -154,17 +161,20 @@ static dispatch_queue_t YBIBImageProcessingQueue(void) {
     NSData *data = self.imageData ? self.imageData().copy : nil;
     if (name.length == 0 && path.length == 0 && data.length == 0) return;
     
-    YBImageDecodeDecision decision = [self defaultDecodeDecision];
+//    YBImageDecodeDecision decision = [self defaultDecodeDecision];
     
-    __block YBImage *image;
+    __block UIImage *image;
     __weak typeof(self) wSelf = self;
     void(^dealBlock)(void) = ^{
         if (name.length > 0) {
-            image = [YBImage imageNamed:name decodeDecision:decision];
+//            image = [YBImage imageNamed:name decodeDecision:decision];
+            image = [UIImage imageNamed:name];
         } else if (path.length > 0) {
-            image = [YBImage imageWithContentsOfFile:path decodeDecision:decision];
+//            image = [YBImage imageWithContentsOfFile:path decodeDecision:decision];
+            image = [UIImage imageWithContentsOfFile:path];
         } else if (data.length > 0) {
-            image = [YBImage imageWithData:data scale:UIScreen.mainScreen.scale decodeDecision:decision];
+//            image = [YBImage imageWithData:data scale:UIScreen.mainScreen.scale decodeDecision:decision];
+            image = [UIImage sd_imageWithData:data scale:UIScreen.mainScreen.scale];
         }
         YBIB_DISPATCH_ASYNC_MAIN(^{
             __strong typeof(wSelf) self = wSelf;
@@ -189,36 +199,37 @@ static dispatch_queue_t YBIBImageProcessingQueue(void) {
 }
 
 - (void)loadImageBlock {
-    if (_freezing) return;
-    __block UIImage *image = self.image ? self.image() : nil;
-    if (!image) return;
-    
-    BOOL shouldPreDecode = self.preDecodeDecision ? self.preDecodeDecision(self, image.size, image.scale) : ![self shouldCompressWithImage:image];
-    
-    __weak typeof(self) wSelf = self;
-    void(^dealBlock)(void) = ^{
-        // Do not need to decode If 'image' conformed 'YYAnimatedImage'. (Not entirely accurate.)
-        if (![image conformsToProtocol:@protocol(YYAnimatedImage)]) {
-            CGImageRef cgImage = YYCGImageCreateDecodedCopy(image.CGImage, shouldPreDecode);
-            image = [UIImage imageWithCGImage:cgImage scale:image.scale orientation:image.imageOrientation];
-            if (cgImage) CGImageRelease(cgImage);
-        }
-        YBIB_DISPATCH_ASYNC_MAIN(^{
-            __strong typeof(wSelf) self = wSelf;
-            if (!self) return;
-            self.loadingStatus = YBIBImageLoadingStatusNone;
-            [self setOriginImageAndLoadWithImage:image];
-        })
-    };
-    
-    if (self.shouldPreDecodeAsync) {
-        [self loadThumbImage];
-        self.loadingStatus = YBIBImageLoadingStatusDecoding;
-        YBIB_DISPATCH_ASYNC(YBIBImageProcessingQueue(), dealBlock)
-    } else {
-        self.loadingStatus = YBIBImageLoadingStatusDecoding;
-        dealBlock();
-    }
+//    if (_freezing) return;
+//    __block UIImage *image = self.image ? self.image() : nil;
+//    if (!image) return;
+//
+//    BOOL shouldPreDecode = self.preDecodeDecision ? self.preDecodeDecision(self, image.size, image.scale) : ![self shouldCompressWithImage:image];
+//
+//    __weak typeof(self) wSelf = self;
+//    void(^dealBlock)(void) = ^{
+//        // Do not need to decode If 'image' conformed 'YYAnimatedImage'. (Not entirely accurate.)
+////        if (![image conformsToProtocol:@protocol(YYAnimatedImage)]) {
+//            CGImageRef cgImage = YYCGImageCreateDecodedCopy(image.CGImage, shouldPreDecode);
+//            image = [UIImage imageWithCGImage:cgImage scale:image.scale orientation:image.imageOrientation];
+//            if (cgImage) CGImageRelease(cgImage);
+////        }
+//
+//        YBIB_DISPATCH_ASYNC_MAIN(^{
+//            __strong typeof(wSelf) self = wSelf;
+//            if (!self) return;
+//            self.loadingStatus = YBIBImageLoadingStatusNone;
+//            [self setOriginImageAndLoadWithImage:image];
+//        })
+//    };
+//
+//    if (self.shouldPreDecodeAsync) {
+//        [self loadThumbImage];
+//        self.loadingStatus = YBIBImageLoadingStatusDecoding;
+//        YBIB_DISPATCH_ASYNC(YBIBImageProcessingQueue(), dealBlock)
+//    } else {
+//        self.loadingStatus = YBIBImageLoadingStatusDecoding;
+//        dealBlock();
+//    }
 }
 
 - (void)loadURL {
@@ -229,7 +240,7 @@ static dispatch_queue_t YBIBImageProcessingQueue(void) {
     if (_freezing) return;
     if (!self.imageURL || self.imageURL.absoluteString.length == 0) return;
     
-    YBImageDecodeDecision decision = [self defaultDecodeDecision];
+//    YBImageDecodeDecision decision = [self defaultDecodeDecision];
     
     self.loadingStatus = YBIBImageLoadingStatusQuerying;
     [self.yb_webImageMediator() yb_queryCacheOperationForKey:self.imageURL completed:^(UIImage * _Nullable image, NSData * _Nullable imageData) {
@@ -246,7 +257,9 @@ static dispatch_queue_t YBIBImageProcessingQueue(void) {
                 self.loadingStatus = YBIBImageLoadingStatusNone;
                 return;
             }
-            YBImage *image = [YBImage imageWithData:imageData scale:UIScreen.mainScreen.scale decodeDecision:decision];
+//            YBImage *image = [YBImage imageWithData:imageData scale:UIScreen.mainScreen.scale decodeDecision:decision];
+            self.imgData = imageData;
+            UIImage *image = [UIImage sd_imageWithData:imageData scale:UIScreen.mainScreen.scale];
             __weak typeof(self) wSelf = self;
             YBIB_DISPATCH_ASYNC_MAIN(^{
                 __strong typeof(wSelf) self = wSelf;
@@ -265,7 +278,7 @@ static dispatch_queue_t YBIBImageProcessingQueue(void) {
     if (_freezing) return;
     if (!self.imageURL || self.imageURL.absoluteString.length == 0) return;
     
-    YBImageDecodeDecision decision = [self defaultDecodeDecision];
+//    YBImageDecodeDecision decision = [self defaultDecodeDecision];
     
     self.loadingStatus = YBIBImageLoadingStatusDownloading;
     __weak typeof(self) wSelf = self;
@@ -286,7 +299,9 @@ static dispatch_queue_t YBIBImageProcessingQueue(void) {
                 self.loadingStatus = YBIBImageLoadingStatusNone;
                 return;
             }
-            YBImage *image = [YBImage imageWithData:imageData scale:UIScreen.mainScreen.scale decodeDecision:decision];
+//            YBImage *image = [YBImage imageWithData:imageData scale:UIScreen.mainScreen.scale decodeDecision:decision];
+            self.imgData = imageData;
+            UIImage *image = [UIImage sd_imageWithData:imageData scale:UIScreen.mainScreen.scale];
             YBIB_DISPATCH_ASYNC_MAIN(^{
                 __strong typeof(wSelf) self = wSelf;
                 if (!self) return;
@@ -312,7 +327,7 @@ static dispatch_queue_t YBIBImageProcessingQueue(void) {
     if (_freezing) return;
     if (!self.imagePHAsset) return;
     
-    YBImageDecodeDecision decision = [self defaultDecodeDecision];
+//    YBImageDecodeDecision decision = [self defaultDecodeDecision];
     
     self.loadingStatus = YBIBImageLoadingStatusReadingPHAsset;
     YBIB_DISPATCH_ASYNC(YBIBImageProcessingQueue(), ^{
@@ -321,7 +336,9 @@ static dispatch_queue_t YBIBImageProcessingQueue(void) {
                 self.loadingStatus = YBIBImageLoadingStatusNone;
                 return;
             }
-            YBImage *image = [YBImage imageWithData:data scale:UIScreen.mainScreen.scale decodeDecision:decision];
+//            YBImage *image = [YBImage imageWithData:data scale:UIScreen.mainScreen.scale decodeDecision:decision];
+            self.imgData = data;
+            UIImage *image = [UIImage sd_imageWithData:data scale:UIScreen.mainScreen.scale];
             __weak typeof(self) wSelf = self;
             YBIB_DISPATCH_ASYNC_MAIN(^{
                 __strong typeof(wSelf) self = wSelf;
@@ -352,7 +369,7 @@ static dispatch_queue_t YBIBImageProcessingQueue(void) {
             if (image) {
                 thumbImage = image;
             } else if (imageData) {
-                thumbImage = [UIImage imageWithData:imageData];
+                thumbImage = [UIImage sd_imageWithData:imageData];
             }
             // If the target image is ready, ignore the thumb image.
             BOOL shouldIgnore = [self shouldCompress] ? (self.compressedImage != nil) : (self.originImage != nil);
@@ -508,17 +525,17 @@ static dispatch_queue_t YBIBImageProcessingQueue(void) {
     return CGSizeMake(rWidth, rHeight);
 }
 
-- (YBImageDecodeDecision)defaultDecodeDecision {
-    __weak typeof(self) wSelf = self;
-    return ^BOOL(CGSize imageSize, CGFloat scale) {
-        __strong typeof(wSelf) self = wSelf;
-        if (!self) return NO;
-        CGSize logicSize = CGSizeMake(imageSize.width / scale, imageSize.height / scale);
-        if (self.preDecodeDecision) return self.preDecodeDecision(self, logicSize, scale);
-        if ([self shouldCompressWithImageSize:logicSize scale:scale]) return NO;
-        return YES;
-    };
-}
+//- (YBImageDecodeDecision)defaultDecodeDecision {
+//    __weak typeof(self) wSelf = self;
+//    return ^BOOL(CGSize imageSize, CGFloat scale) {
+//        __strong typeof(wSelf) self = wSelf;
+//        if (!self) return NO;
+//        CGSize logicSize = CGSizeMake(imageSize.width / scale, imageSize.height / scale);
+//        if (self.preDecodeDecision) return self.preDecodeDecision(self, logicSize, scale);
+//        if ([self shouldCompressWithImageSize:logicSize scale:scale]) return NO;
+//        return YES;
+//    };
+//}
 
 - (void)modifyImageWithModifier:(YBIBImageModifierBlock)modifier image:(UIImage *)image completion:(void(^)(UIImage *processedImage))completion {
     if (modifier) {
@@ -596,8 +613,17 @@ static dispatch_queue_t YBIBImageProcessingQueue(void) {
 
 - (void)yb_saveToPhotoAlbum {
     void(^saveData)(NSData *) = ^(NSData * _Nonnull data){
-        [[ALAssetsLibrary new] writeImageDataToSavedPhotosAlbum:data metadata:nil completionBlock:^(NSURL *assetURL, NSError *error) {
-            [self saveToPhotoAlbumCompleteWithError:error];
+//        [[ALAssetsLibrary new] writeImageDataToSavedPhotosAlbum:data metadata:nil completionBlock:^(NSURL *assetURL, NSError *error) {
+//            [self saveToPhotoAlbumCompleteWithError:error];
+//        }];
+        [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+        PHAssetResourceCreationOptions *options = [[PHAssetResourceCreationOptions alloc] init];
+        PHAssetCreationRequest *request = [PHAssetCreationRequest creationRequestForAsset];
+        [request addResourceWithType:PHAssetResourceTypePhoto data:data options:options];
+        } completionHandler:^(BOOL success, NSError * _Nullable error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self saveToPhotoAlbumCompleteWithError:error];
+            });
         }];
     };
     void(^saveImage)(UIImage *) = ^(UIImage * _Nonnull image){
@@ -608,11 +634,21 @@ static dispatch_queue_t YBIBImageProcessingQueue(void) {
     };
     
     [YBIBPhotoAlbumManager getPhotoAlbumAuthorizationSuccess:^{
-        if ([self.originImage conformsToProtocol:@protocol(YYAnimatedImage)] && [self.originImage respondsToSelector:@selector(animatedImageData)] && [self.originImage performSelector:@selector(animatedImageData)]) {
-            NSData *data = [self.originImage performSelector:@selector(animatedImageData)];
-            data ? saveData(data) : unableToSave();
-        } else if (self.originImage) {
-            saveImage(self.originImage);
+//        if ([self.originImage conformsToProtocol:@protocol(YYAnimatedImage)] && [self.originImage respondsToSelector:@selector(animatedImageData)] && [self.originImage performSelector:@selector(animatedImageData)]) {
+//            NSData *data = [self.originImage performSelector:@selector(animatedImageData)];
+//            data ? saveData(data) : unableToSave();
+//        } else if (self.originImage) {
+        if (self.originImage) {
+            NSData *imgData = self.imgData;
+            NSString *imgType = [self contentTypeForImageData:imgData];
+            if (self.imgData) {
+               saveData(self.imgData);
+            } else if ([imgType isEqualToString:@"png"]) {
+                NSData *data = UIImagePNGRepresentation(self.originImage);
+                data ? saveData(data) : unableToSave();
+            } else {
+                saveImage(self.originImage);
+            }
         } else if (self.imageURL) {
             [self.yb_webImageMediator() yb_queryCacheOperationForKey:self.imageURL completed:^(UIImage * _Nullable image, NSData * _Nullable data) {
                 if (data) {
@@ -629,6 +665,45 @@ static dispatch_queue_t YBIBImageProcessingQueue(void) {
     } failed:^{
         [self.yb_auxiliaryViewHandler() yb_showIncorrectToastWithContainer:self.yb_containerView text:[YBIBCopywriter sharedCopywriter].getPhotoAlbumAuthorizationFailed];
     }];
+}
+
+//通过图片Data数据第一个字节 来获取图片扩展名
+- (NSString *)contentTypeForImageData:(NSData *)data {
+    if (data == nil) {
+        return @"";
+    }
+    uint8_t c;
+    [data getBytes:&c length:1];
+    switch (c) {
+        case 0xFF:
+            return @"jpeg";
+        case 0x89:
+            return @"png";
+        case 0x47:
+            return @"gif";
+        case 0x49:
+        case 0x4D:
+            return @"tiff";
+        case 0x52:
+            if ([data length] < 12) {
+                return @"";
+            }
+            NSString *testString = [[NSString alloc] initWithData:[data subdataWithRange:NSMakeRange(0, 12)] encoding:NSASCIIStringEncoding];
+            if ([testString hasPrefix:@"RIFF"] && [testString hasSuffix:@"WEBP"]) {
+                return @"webp";
+            }
+            return @"";
+    }
+    return @"";
+}
+
+- (BOOL)hasAlphaChannel:(UIImage *)img
+{
+    CGImageAlphaInfo alpha = CGImageGetAlphaInfo(img.CGImage);
+    return (alpha == kCGImageAlphaFirst ||
+            alpha ==kCGImageAlphaLast||
+            alpha ==kCGImageAlphaPremultipliedFirst ||
+            alpha ==kCGImageAlphaPremultipliedLast);
 }
 
 #pragma mark - getters & setters

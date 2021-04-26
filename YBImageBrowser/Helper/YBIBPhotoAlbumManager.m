@@ -59,6 +59,9 @@
         case PHAuthorizationStatusAuthorized:
             if (success) success();
             break;
+        default:
+            if (success) success();
+            break;
     }
 }
 

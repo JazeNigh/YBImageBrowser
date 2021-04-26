@@ -30,8 +30,9 @@
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
         self.selectionStyle = UITableViewCellSelectionStyleNone;
         _titleLabel = [UILabel new];
-        _titleLabel.textColor = UIColor.darkTextColor;
-        _titleLabel.font = [UIFont fontWithName:@"Avenir-Medium" size:16];
+//        _titleLabel.textColor = UIColor.darkTextColor;
+//        _titleLabel.font = [UIFont fontWithName:@"Avenir-Medium" size:16];
+        _titleLabel.font = [UIFont systemFontOfSize:16];
         _titleLabel.textAlignment = NSTextAlignmentCenter;
         _line = [CALayer new];
         _line.backgroundColor = UIColor.groupTableViewBackgroundColor.CGColor;
@@ -100,7 +101,7 @@ static CGFloat kOffsetSpace = 5;
     _tableHideFrame = _tableShowFrame;
     _tableHideFrame.origin.y = self.bounds.size.height;
     
-    self.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0];
+//    self.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0];
     self.tableView.frame = _tableHideFrame;
     self.tableView.tableFooterView.bounds = CGRectMake(0, 0, self.tableView.frame.size.width, footerHeight);
     [UIView animateWithDuration:self.showDuration animations:^{
@@ -114,7 +115,7 @@ static CGFloat kOffsetSpace = 5;
     
     void(^animationsBlock)(void) = ^{
         self.tableView.frame = self->_tableHideFrame;
-        self.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0];
+//        self.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0];
     };
     void(^completionBlock)(BOOL n) = ^(BOOL n){
         [self removeFromSuperview];
@@ -199,7 +200,7 @@ static CGFloat kOffsetSpace = 5;
             _tableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
         }
         UIView *footer = [UIView new];
-        footer.backgroundColor = UIColor.whiteColor;
+//        footer.backgroundColor = UIColor.whiteColor;
         _tableView.tableFooterView = footer;
         [_tableView registerClass:YBIBSheetCell.self forCellReuseIdentifier:NSStringFromClass(YBIBSheetCell.self)];
     }

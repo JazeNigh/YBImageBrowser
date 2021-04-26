@@ -5,6 +5,7 @@
 //  Created by 波儿菜 on 2019/6/10.
 //  Copyright © 2019 波儿菜. All rights reserved.
 //
+#import <UIKit/UIKit.h>
 
 #import "YBImage.h"
 
@@ -21,7 +22,7 @@ typedef NS_ENUM(NSInteger, YBIBScrollImageType) {
 
 - (void)setImage:(__kindof UIImage *)image type:(YBIBScrollImageType)type;
 
-@property (nonatomic, strong, readonly) YYAnimatedImageView *imageView;
+@property (nonatomic, strong, readonly) UIImageView *imageView;
 
 @property (nonatomic, assign) YBIBScrollImageType imageType;
 

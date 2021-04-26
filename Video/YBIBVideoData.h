@@ -9,7 +9,19 @@
 #import <Photos/Photos.h>
 #import "YBIBDataProtocol.h"
 #import "YBIBInteractionProfile.h"
-
+#import <ImageIO/ImageIO.h>
+#import <UIKit/UIKit.h>
+#import <CoreGraphics/CoreGraphics.h>
+#import <CoreImage/CoreImage.h>
+#import <CoreFoundation/CoreFoundation.h>
+#import <ImageIO/ImageIO.h>
+#import <Accelerate/Accelerate.h>
+#import <QuartzCore/QuartzCore.h>
+#import <MobileCoreServices/MobileCoreServices.h>
+//#import <AssetsLibrary/AssetsLibrary.h>
+#import <objc/runtime.h>
+#import <pthread.h>
+#import <zlib.h>
 NS_ASSUME_NONNULL_BEGIN
 
 @class YBIBVideoData;

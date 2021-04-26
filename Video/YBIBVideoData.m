@@ -13,7 +13,8 @@
 #import "YBIBPhotoAlbumManager.h"
 #import "YBIBCopywriter.h"
 
-extern CGImageRef YYCGImageCreateDecodedCopy(CGImageRef imageRef, BOOL decodeForDisplay);
+
+//extern CGImageRef YYCGImageCreateDecodedCopy(CGImageRef imageRef, BOOL decodeForDisplay);
 
 @interface YBIBVideoData () <NSURLSessionDelegate>
 @end
@@ -88,39 +89,39 @@ extern CGImageRef YYCGImageCreateDecodedCopy(CGImageRef imageRef, BOOL decodeFor
     }
 }
 - (void)loadThumbImage_firstFrame {
-    if (!self.videoAVAsset) return;
-    if (self.isLoadingFirstFrame) {
-        self.loadingFirstFrame = YES;
-        return;
-    }
-    
-    self.loadingFirstFrame = YES;
-    CGSize containerSize = self.yb_containerSize(self.yb_currentOrientation());
-    CGSize maximumSize = containerSize;
-    
-    __weak typeof(self) wSelf = self;
-    YBIB_DISPATCH_ASYNC(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        
-        AVAssetImageGenerator *generator = [AVAssetImageGenerator assetImageGeneratorWithAsset:self.videoAVAsset];
-        generator.appliesPreferredTrackTransform = YES;
-        generator.maximumSize = maximumSize;
-        NSError *error = nil;
-        CGImageRef cgImage = [generator copyCGImageAtTime:CMTimeMake(0, 1) actualTime:NULL error:&error];
-        CGImageRef decodedImage = YYCGImageCreateDecodedCopy(cgImage, YES);
-        UIImage *resultImage = [UIImage imageWithCGImage:decodedImage];
-        if (cgImage) CGImageRelease(cgImage);
-        if (decodedImage) CGImageRelease(decodedImage);
-        
-        YBIB_DISPATCH_ASYNC_MAIN(^{
-            __strong typeof(wSelf) self = wSelf;
-            if (!self) return;
-            self.loadingFirstFrame = NO;
-            if (!error && resultImage) {
-                self.thumbImage = resultImage;
-                [self.delegate yb_videoData:self readyForThumbImage:self.thumbImage];
-            }
-        })
-    })
+//    if (!self.videoAVAsset) return;
+//    if (self.isLoadingFirstFrame) {
+//        self.loadingFirstFrame = YES;
+//        return;
+//    }
+//    
+//    self.loadingFirstFrame = YES;
+//    CGSize containerSize = self.yb_containerSize(self.yb_currentOrientation());
+//    CGSize maximumSize = containerSize;
+//    
+//    __weak typeof(self) wSelf = self;
+//    YBIB_DISPATCH_ASYNC(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//        
+//        AVAssetImageGenerator *generator = [AVAssetImageGenerator assetImageGeneratorWithAsset:self.videoAVAsset];
+//        generator.appliesPreferredTrackTransform = YES;
+//        generator.maximumSize = maximumSize;
+//        NSError *error = nil;
+//        CGImageRef cgImage = [generator copyCGImageAtTime:CMTimeMake(0, 1) actualTime:NULL error:&error];
+//        CGImageRef decodedImage = YYCGImageCreateDecodedCopy(cgImage, YES);
+//        UIImage *resultImage = [UIImage imageWithCGImage:decodedImage];
+//        if (cgImage) CGImageRelease(cgImage);
+//        if (decodedImage) CGImageRelease(decodedImage);
+//        
+//        YBIB_DISPATCH_ASYNC_MAIN(^{
+//            __strong typeof(wSelf) self = wSelf;
+//            if (!self) return;
+//            self.loadingFirstFrame = NO;
+//            if (!error && resultImage) {
+//                self.thumbImage = resultImage;
+//                [self.delegate yb_videoData:self readyForThumbImage:self.thumbImage];
+//            }
+//        })
+//    })
 }
 
 #pragma mark - <YBIBDataProtocol>
