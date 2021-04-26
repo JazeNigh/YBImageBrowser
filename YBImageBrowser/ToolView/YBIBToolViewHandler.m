@@ -10,13 +10,13 @@
 #import "YBIBCopywriter.h"
 #import "YBIBUtilities.h"
 
-@interface YBIBToolViewHandler ()
+@interface YBIBToolViewHandlerDefault ()
 @property (nonatomic, strong) YBIBSheetView *sheetView;
 @property (nonatomic, strong) YBIBSheetAction *saveAction;
 @property (nonatomic, strong) YBIBTopView *topView;
 @end
 
-@implementation YBIBToolViewHandler
+@implementation YBIBToolViewHandlerDefault
 
 #pragma mark - <YBIBToolViewHandler>
 

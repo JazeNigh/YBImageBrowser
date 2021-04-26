@@ -40,7 +40,7 @@ static NSString *kAdvertKey = @"广告位";
 - (void)yb_imageBrowser:(YBImageBrowser *)imageBrowser pageChanged:(NSInteger)page data:(id<YBIBDataProtocol>)data {
     // 当是自定义的 Cell 时，隐藏右边的操作按钮
     // 对于工具栏的处理自定义一个 id<YBIBToolViewHandler> 是最灵活的方式，默认实现很多时候可能满足不了需求
-    imageBrowser.defaultToolViewHandler.topView.operationButton.hidden = [data isKindOfClass:TestCustomData.self];
+//    imageBrowser.defaultToolViewHandler.topView.operationButton.hidden = [data isKindOfClass:TestCustomData.self];
 }
 
 #pragma mark - override

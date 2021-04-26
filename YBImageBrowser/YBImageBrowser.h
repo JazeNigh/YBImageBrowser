@@ -90,7 +90,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// 内部消息是按照数组下标顺序调度的，所以如果有多个处理器注意添加 UIView 的视图层级。
 @property (nonatomic, copy) NSArray<id<YBIBToolViewHandler>> *toolViewHandlers;
 /// 默认工具视图处理器
-@property (nonatomic, weak, readonly) YBIBToolViewHandler *defaultToolViewHandler;
+@property (nonatomic, weak, readonly) id<YBIBToolViewHandler> defaultToolViewHandler;
 
 /// Toast/Loading 处理器 (赋值可自定义)
 @property (nonatomic, strong) id<YBIBAuxiliaryViewHandler> auxiliaryViewHandler;

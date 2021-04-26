@@ -48,7 +48,7 @@
 - (void)initValue {
     _transitioning = _showTransitioning = _hideTransitioning = NO;
     _defaultAnimatedTransition = _animatedTransition = [YBIBAnimatedTransition new];
-    _toolViewHandlers = @[[YBIBToolViewHandler new]];
+    _toolViewHandlers = @[[YBIBToolViewHandlerDefault new]];
     _defaultToolViewHandler = _toolViewHandlers[0];
     _auxiliaryViewHandler = [YBIBAuxiliaryViewHandler new];
     _shouldHideStatusBar = YES;

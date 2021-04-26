@@ -54,7 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface YBIBToolViewHandler : NSObject <YBIBToolViewHandler>
+@interface YBIBToolViewHandlerDefault : NSObject <YBIBToolViewHandler>
 
 /// 弹出表单视图
 @property (nonatomic, strong, readonly) YBIBSheetView *sheetView;
